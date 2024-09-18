@@ -3,10 +3,10 @@
 # Exempel-input: "a string with spaces and a newline character\n" Förväntad output: "atigihpcsnaelncaatr"
 
 def remove_all(text):
-    # Step 1: remove all whitespaces (spaces, tabs, newlines)
+    # Remove all whitespaces (spaces, tabs, newlines)
     text_without_whitespace = ''.join(text.split())
     
-    # Step 2: Create a new string using only characters at even index positions
+    # Create a new string using only characters at even index positions
     result = ""
     
     # Loop through each character in the string

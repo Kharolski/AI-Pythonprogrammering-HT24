@@ -5,14 +5,14 @@ def find_longest_word(word_list):
     longest_word = ""
     max_length = 0
     
-    # Step 2: Loop through each word in the list
+    # Loop through each word in the list
     for word in word_list:
-        # Step 3: Check if the current word is longer than the longest word found so far
+        # Check if the current word is longer than the longest word found so far
         if len(word) > max_length:
             longest_word = word
             max_length = len(word)
     
-    # Step 4: Return the longest word and its length
+    # Return the longest word and its length
     return longest_word, max_length
 
 # Example list of words

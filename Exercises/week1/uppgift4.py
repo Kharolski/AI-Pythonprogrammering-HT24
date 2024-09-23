@@ -3,14 +3,14 @@
 
 def change_string(text1, text2):
 
-    if len(text1) < 2 or len(text2) < 2:
-        return "Båda strängarna måste vara minst två tecken långa."
+    if len(text1) < 3 or len(text2) < 3:
+        return "Båda strängarna måste vara minst tre tecken långa."
     else:
-        # Byt de två första tecknen i båda strängarna
-        ny_string1 = text2[:2] + text1[2:]
-        ny_string2 = text1[:2] + text2[2:]
+        # Swap the first two characters in both strings
+        new_string1 = text2[:2] + text1[2:]
+        new_string2 = text1[:2] + text2[2:]
 
-        return f"{ny_string1} {ny_string2}"
+        return f"{new_string1} {new_string2}"
 
 # Användarens input
 input_text1 = input("Ange första strängen: ")

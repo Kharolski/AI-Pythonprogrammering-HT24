@@ -103,5 +103,3 @@ while is_running:
     else:
         print("Ogiltigt val, försök igen.")
 
-
-

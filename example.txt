@@ -1,0 +1,3 @@
+Hej! världen!
+Detta är en exempelfil.
+Detta är ytterligare en rad.

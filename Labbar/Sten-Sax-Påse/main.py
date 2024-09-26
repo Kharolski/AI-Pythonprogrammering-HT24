@@ -1,40 +1,64 @@
+# Projekt 3: Sten-sax-påse
+
+# Skapa en version av spelet sten-sax-påse.
+
+# ·   Datorn slumpar vilken av sten, sax eller påse den ska välja.
+# ·   Spelaren väljer också sten, sax eller påse.
+# ·   Datorn och spelaren visar sedan upp sina val samtidigt.
+# ·   Reglerna är enligt följande: sten vinner över sax, sax vinner över påse, och påse vinner över sten. Om båda väljer samma alternativ blir det oavgjort.
+# ·   Spelaren spelar tills hen vinner eller förlorar mot datorn.
+
+
 import random
 
-# välkomstmeddelande
-print("Welcome to the game rock, paper, scissors!")
-choices = ["rock", "paper", "scissors"]
+class RockPaperScissors:
+    def __init__(self):
+        self.choices = ["rock", "paper", "scissors"]
 
-# loop för att låta användaren spela flera gånger
-while True:
-    computer = random.choice(choices)
-    player = None
+    def get_computer_choice(self):
+        return random.choice(self.choices)
+    
+    def get_player_choice(self):
+        player = None
+        while player not in self.choices:
+            player = input("Välj ett av följande (-- rock, paper, or scissors --): ").lower()
+        return player
 
-    # En loop som fortsätter tills spelaren gör ett giltigt val
-    while player not in choices:
-        player = input("Please choose (-- rock, paper, or scissors --): ").lower()
+    def check_winner(self, player, computer):
+        if player == computer:
+            return "Tie!"
+        elif (player == "rock" and computer == "scissors") or \
+             (player == "scissors" and computer == "paper") or \
+             (player == "paper" and computer == "rock"):
+            return "Grattis! Du vann!"
+        else:
+            return "Tyvärr! Du har förlurat!"
 
-    # Visar både datorns och spelarens val
-    print(f"Computer: {computer}")
-    print(f"Player: {player}")
+    def play_game(self):
+        print("Välkommen till spelet sten, sak, påse!")
+        while True:
+            computer = self.get_computer_choice()
+            player = self.get_player_choice()
 
-    if player == computer:
-        print("Tie!")
-    elif (player == "rock" and computer == "scissors") or \
-         (player == "scissors" and computer == "paper") or \
-         (player == "paper" and computer == "rock"):
-        print("You Win!")
-    else:
-        print("You lose!")
+            # Visar både datorns och spelarens val
+            print(f"Computer: {computer}")
+            print(f"Player: {player}")
 
-    play_again = input("Do you want to play again? (y/n): ").lower()
-    if play_again != "y":
-        break
+            # Kontrollera vinnaren
+            result = self.check_winner(player, computer)
+            print(result)
 
-print("Thanks for playing. Bye!")
+            play_again = input("Vill du spela igen? (y/n): ").lower()
+            if play_again != "y":
+                print("Tack för att du spelade. Hej då!")
+                break
+
+def main():
+    game = RockPaperScissors()
+    game.play_game()
 
 
-
-
-
+if __name__ == "__main__":
+    main()
 
 

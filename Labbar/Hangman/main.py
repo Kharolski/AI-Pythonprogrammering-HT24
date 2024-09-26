@@ -1,69 +1,90 @@
+# Projekt 1: Hangman
+
+# Skapa en version av det klassiska spelet Hangman.
+# Datorn väljer ett slumpmässigt ord från en fördefinierad lista av ord.
+# Spelet visar hur många bokstäver ordet består av, men inte vilka bokstäver som är rätt.
+# Spelaren ska gissa en bokstav i taget, och datorn ger feedback om bokstaven finns i ordet eller inte.
+# Spelet fortsätter tills spelaren har gissat hela ordet eller har gjort tillräckligt många felaktiga gissningar.
+
+
 import random
 
-word_list = ["python", "javascript", "hangman", "computer", "programming"]
-playing = True
+class Hangman:
+    def __init__(self):
+        self.word_list = ["python", "javascript", "hangman", "computer", "programming"]
+        self.attempts = 6
+        self.word = ""
+        self.guessed_word = []
+        self.guessed_letters = []
 
-while playing:
+    def choose_word(self):
+        self.word = random.choice(self.word_list)
+        self.guessed_word = ["_"] * len(self.word)
+        self.guessed_letters = []
+        self.attempts = 6
 
-    word = random.choice(word_list)
+    def display_status(self):
+        print("\nGuessed so far:", ' '.join(self.guessed_word))
+        print(f"Remaining attempts: {self.attempts}")
 
-    # Håller koll på de korrekta gissningarna och antal felaktiga gissningar
-    guessed_word = ["_"] * len(word)  
-    guessed_letters = []  
-    attempts = 6                    # Max tillåtna felaktiga gissningar
-
-    # Välkomstmeddelande
-    print("Welcome to Hangman!")
-    print(f"The word has {len(word)} letters: {' '.join(guessed_word)}")
-    print(f"You have {attempts} attempts to guess the word.")
-
-    # Loopar tills spelaren har gissat hela ordet eller använt alla försök
-    while attempts > 0 and "_" in guessed_word:
-        print("\nGuessed so far:", ' '.join(guessed_word))
-        print(f"Remaining attempts: {attempts}")
-
+    def get_guess(self):
         guess = input("Guess a letter or whole word: ").lower()
+        return guess
 
-        # Kontrollera om bokstaven redan har gissats
-        if guess in guessed_letters:
+    def process_guess(self, guess):
+        if guess in self.guessed_letters:
             print(f"You have already guessed the letter '{guess}'. Try another one.")
-            continue
+            return
 
-        # Lägger till gissningen
-        guessed_letters.append(guess)
+        self.guessed_letters.append(guess)
 
-        # Om gissningen är rätt
-        if guess in word:
-
-            # om man gissat hela ordet
-            if guess == word:
-                guessed_word = guess
-                break
-
+        if guess == self.word:  # If the entire word is guessed correctly
+            self.guessed_word = list(self.word)
+        elif guess in self.word:
             print(f"Good job! The letter '{guess}' is in the word.")
-            
-            # Uppdaterar guessed_word med den gissade bokstaven på rätt positioner
-            for i in range(len(word)):
-                if word[i] == guess:
-                    guessed_word[i] = guess
+            for i in range(len(self.word)):
+                if self.word[i] == guess:
+                    self.guessed_word[i] = guess
         else:
-            # Om gissningen är fel, minskas antalet försök
-            if len(guess) > 0:
-                print(f"Sorry! This is wrong word '{guess}' ")
-                attempts -= 1
-            else:
-                attempts -= 1
-                print(f"Sorry! The letter '{guess}' is not in the word.")
+            print(f"Sorry! The letter or word '{guess}' is incorrect.")
+            self.attempts -= 1
 
-    # Resultat av spelet
-    if "_" not in guessed_word:
-        print(f"\nCongratulations! You guessed the word: {word}")
-    else:
-        print(f"\nGame over! You've run out of attempts. The word was: {word}")
-    
-    # Om man vill spela igen
-    play_again = input("Do you want to play again? (y/n): ").lower()
-    if not play_again == "y":
-        playing = False
+    def is_word_guessed(self):
+        return "_" not in self.guessed_word
 
+    def is_game_over(self):
+        return self.attempts == 0 or self.is_word_guessed()
+
+    def display_end_result(self):
+        if self.is_word_guessed():
+            print(f"\nCongratulations! You guessed the word: {self.word}")
+        else:
+            print(f"\nGame over! You've run out of attempts. The word was: {self.word}")
+
+    def play(self):
+        self.choose_word()
+        print("Welcome to Hangman!")
+        print(f"The word has {len(self.word)} letters: {' '.join(self.guessed_word)}")
+        print(f"You have {self.attempts} attempts to guess the word.")
+
+        while not self.is_game_over():
+            self.display_status()
+            guess = self.get_guess()
+            self.process_guess(guess)
+
+        self.display_end_result()
+
+def main():
+    game = Hangman()
+    playing = True
+
+    while playing:
+        game.play()
+        play_again = input("Do you want to play again? (y/n): ").lower()
+        if play_again != "y":
+            playing = False
+            print("Thanks for playing Hangman! Goodbye!")
+
+if __name__ == "__main__":
+    main()
 

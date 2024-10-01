@@ -1,0 +1,18 @@
+Försäljningsanalys Sammanfattning
+===============================
+
+Total försäljning per produkt:
+Product
+Laptop        14000
+Smartphone     8960
+Tablet         6030
+
+Genomsnittlig försäljning per månad:
+Month
+2023-01    950.0
+2023-02    954.0
+2023-03    995.0
+Freq: M
+
+Produkten med högst försäljning: Laptop
+

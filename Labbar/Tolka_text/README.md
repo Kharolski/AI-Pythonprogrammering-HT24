@@ -83,6 +83,13 @@ Följande krav specificerar de nödvändiga elementen för att genomföra projek
 **Main**
 - Huvudfunktionen som sköter hela processen från datainsamling till utvärdering.
 
+<<<<<<< HEAD
+=======
+> Extra funktioner (om tid finns):
+- Gränssnitt för att rita siffror direkt i programmet
+- Realtidsklassificering av ritade siffror
+
+>>>>>>> d28a9935536b87d99cf05ce456a1ae301cc21c6f
 ## Framtida förbättringar
 - Utöka datasetet med fler exempel per siffra för att förbättra modellens noggrannhet
 - Implementera mer avancerad modell

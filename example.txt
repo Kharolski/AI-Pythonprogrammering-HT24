@@ -1,3 +1,21 @@
 Hej! världen!
 Detta är en exempelfil.
 Detta är ytterligare en rad.
+
+
+machine_learning_exercises/
+    ├── scikit_exercises/
+    │    ├── linear_regression_scikit.py
+    │    ├── clustering_scikit.py
+    │    ├── hyperparameter_tuning_scikit.py
+    │    └── __init__.py
+    ├── keras_exercises/
+    │    ├── binary_classification_keras.py
+    │    ├── cnn_keras.py
+    │    ├── timeseries_forecasting_keras.py
+    │    └── __init__.py
+    ├── tensorflow_exercises/
+    │    ├── multiclass_classification_tensorflow.py
+    │    ├── transfer_learning_tensorflow.py
+    │    ├── dimensionality_reduction_tensorflow.py
+    │    └── __init__.py

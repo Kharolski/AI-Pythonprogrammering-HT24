@@ -31,7 +31,8 @@ model = tf.keras.Sequential([
 
     # Dense(16) har 16 neuroner i detta lager
     # activation='relu' innebär att vi använder ReLU som aktiveringsfunktion
-    tf.keras.layers.Dense(16, activation='relu', input_shape=(X_train.shape[1],)),
+    tf.keras.layers.Input(shape=(X_train.shape[1],)),
+    tf.keras.layers.Dense(16, activation='relu'),
     tf.keras.layers.Dense(8, activation='relu'),
 
     # activation='sigmoid' används i utgångslagret för binär klassificering

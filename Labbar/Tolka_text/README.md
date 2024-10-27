@@ -86,8 +86,9 @@ Följande krav specificerar de nödvändiga elementen för att genomföra projek
 - Huvudfunktionen som sköter hela processen från datainsamling till utvärdering.
 
 ## Framtida förbättringar
-- Utöka datasetet med fler exempel per siffra för att förbättra modellens noggrannhet
-- Implementera mer avancerad modell
-- Skapa ett modell som kan skilja om man skrev till exempel 1 eller 11
-- Utforska möjligheten att utöka projektet till att inkludera bokstäver eller andra symboler
+**Utöka datasetet**: Samla fler exempel per siffra för att förbättra modellens noggrannhet.
+**Spara uppdelad data**: Implementera funktionalitet för att spara den uppdelade datan (tränings- och testset) för att möjliggöra noggranna jämförelser mellan olika modeller och inställningar.
+**Implementera mer avancerade modeller**: Utforska och implementera mer avancerade modeller, som Convolutional Neural Networks (CNNs).
+**Skillnad mellan siffror**: Skapa en modell som kan skilja mellan siffror som 1 och 11, vilket kan kräva mer noggrann analys av avstånd och former i handstilen.
+**Utöka projektet**: Utforska möjligheten att utöka projektet till att inkludera klassificering av bokstäver eller andra symboler.
 

@@ -64,6 +64,8 @@ Följande krav specificerar de nödvändiga elementen för att genomföra projek
 
 **DataCollector**
 - collect_images(): Samlar in bilder av handskrivna siffror
+- is_image_saved(): Kontrollera om en bild redan finns sparad genom att jämföra
+- load_existing_dataset(): Kollar om dataset redan finns och laddar den
 - preprocess_images(): Förbehandlar bilder (storleksändring, svartvitt, etc.)
 - save_dataset(): Sparar det förbehandlade datasetet
 

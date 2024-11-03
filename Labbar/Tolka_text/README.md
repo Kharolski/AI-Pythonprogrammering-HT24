@@ -31,7 +31,10 @@ Detta projekt illustrerar hur AI kan anpassas till individuella behov och prefer
 - Egna handskrivna siffror, fotograferade och förbehandlade
 
 ## Modell
-Multi-layer Perceptron (MLP) Classifier, en enkel typ av neuralt nätverk lämplig för bildklassificering.
+- Multi-layer Perceptron (MLP) Classifier
+- Support Vector Machine (SVM)
+- Random Forest Classifier
+- Modelloptimering genom GridSearchCV
 
 ## Funktioner
 1. Datainsamling och förbehandling av egna handskrivna siffror
@@ -39,6 +42,10 @@ Multi-layer Perceptron (MLP) Classifier, en enkel typ av neuralt nätverk lämpl
 3. Modellträning
 4. Utvärdering av modellens prestanda
 5. Möjlighet att klassificera nya handskrivna siffror
+6. Jämförelse av olika maskininlärningsmodeller
+7. Automatisk hyperparameteroptimering
+8. Validering av sifferkvalitet
+9. Batch-processering av bilder
 
 ## Begränsningar
 - Begränsat till siffror 0-9
@@ -57,8 +64,12 @@ Följande krav specificerar de nödvändiga elementen för att genomföra projek
 ### Bibliotek
 - scikit-learn: för modellträning och utvärdering
 - numpy: för numeriska operationer
-- PIL (Python Imaging Library): för bildbehandling
+- PIL (Python Imaging Library): för grundläggande bildhantering i DataCollector
+- opencv (cv2): för avancerad bildbehandling och segmentering
 - matplotlib: för visualisering
+- seaborn: för förbättrad statistisk visualisering
+- glob: för filhantering
+- os: för operativsystemsoperationer
 
 ### Klasser och metoder
 
@@ -78,6 +89,17 @@ Följande krav specificerar de nödvändiga elementen för att genomföra projek
 - evaluate_model() : Utvärderar modellens prestanda
 - predict() : Klassificerar nya handskrivna siffror
 
+**ImageProcessor**
+- enchance_image(): Förbättrar bildkvaliteten
+- process_with_prediction(): Visar och validerar extraherade siffror
+- batch_process(): Hanterar flera bilder samtidigt
+- _segment_image(): Segmenterar bilder till individuella siffror
+- _is_valid_digit(): Validerar sifferkvalitet
+
+**ModelComparator**
+- optimize_hyperparameters(): Optimerar hyperparametrar för varje modell
+- compare_models(): Jämför och visualiserar modellernas prestanda
+
 **Visualizer**
 - plot_sample_images(): Visar exempel på bilder från datasetet
 - plot_confusion_matrix(): Visar förväxlingsmatris för modellens prestanda
@@ -86,9 +108,12 @@ Följande krav specificerar de nödvändiga elementen för att genomföra projek
 - Huvudfunktionen som sköter hela processen från datainsamling till utvärdering.
 
 ## Framtida förbättringar
-**Utöka datasetet**: Samla fler exempel per siffra för att förbättra modellens noggrannhet.
-**Spara uppdelad data**: Implementera funktionalitet för att spara den uppdelade datan (tränings- och testset) för att möjliggöra noggranna jämförelser mellan olika modeller och inställningar.
-**Implementera mer avancerade modeller**: Utforska och implementera mer avancerade modeller, som Convolutional Neural Networks (CNNs).
-**Skillnad mellan siffror**: Skapa en modell som kan skilja mellan siffror som 1 och 11, vilket kan kräva mer noggrann analys av avstånd och former i handstilen.
+
+**Implementera mer avancerade modeller**: Utforska och implementera Convolutional Neural Networks (CNNs) och andra djupa arkitekturer.
 **Utöka projektet**: Utforska möjligheten att utöka projektet till att inkludera klassificering av bokstäver eller andra symboler.
+**Realtidsigenkänning**: Implementera en live-kameraström för direktklassificering av handskrivna siffror.
+**Förbättrad segmentering**: Utveckla mer robusta metoder för att hantera sammanhängande siffror och olika skrivstilar.
+**Webbgränssnitt**: Skapa ett användarvänligt webbgränssnitt för enkel interaktion med systemet.
+**Automatisk dataaugmentering**: Implementera tekniker för att automatiskt generera fler träningsexempel genom rotation, skalning och brusning.
+
 

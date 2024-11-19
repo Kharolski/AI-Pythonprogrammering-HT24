@@ -142,9 +142,6 @@ class ModelComparator:
             score = model.score(X_test, y_test)
             self.scores[name] = score
 
-            # Visa resultatet för varje modell
-            print(f"{name} - Accuracy: {score:.4f}")
-
             # Uppdatera bästa modellen om current score är högre
             if score > best_score:
                 best_score = score
@@ -157,21 +154,8 @@ class ModelComparator:
         """
         Genomför komplett träning och utvärdering av ML-modeller
         
-        Workflow:
-        1. Optimerar hyperparametrar för alla modeller
-        2. Jämför modellernas prestanda
-        3. Utvärderar bästa modellen i detalj
-        4. Genererar prestandarapport
-        5. Visualiserar resultat
-        
-        Args:
-            X_train: Träningsdata (features)
-            X_test: Testdata (features)
-            y_train: Träningsetiketter
-            y_test: Testetiketter
-        
         Returns:
-            tuple: (bästa modellen, förväxlingsmatris)
+            dict: Innehåller all träningsdata och resultat
         """
         try:
             # Optimera hyperparametrar
@@ -183,32 +167,25 @@ class ModelComparator:
             # Kontrollera att en modell valdes framgångsrikt
             if best_model is None:
                 raise ValueError("Ingen modell kunde tränas framgångsrikt")
-                
-            # print(f"\nBästa modellen: {best_model.__class__.__name__}")
 
             # Detaljerad utvärdering av bästa modellen
             accuracy = best_model.score(X_test, y_test)
             predictions = best_model.predict(X_test)
             conf_matrix = confusion_matrix(y_test, predictions)
+            scores = {
+                'MLP': self.models['MLP'].score(X_test, y_test),
+                'SVM': self.models['SVM'].score(X_test, y_test),
+                'RandomForest': self.models['RandomForest'].score(X_test, y_test)
+            }
             
-            # Generera prestandarapport med tydligt modellnamn
-            print(f"\nBästa modellen är: {best_model_name} och modellens noggrannhet: {accuracy:.2%}")
-            if best_model.__class__.__name__ in self.best_params:
-                print(f"Bästa parametrar: {self.best_params[best_model.__class__.__name__]}")
-
-            # Visualisera resultat
-            self.visualizer.plot_complete_analysis(
-                X_test,  # images
-                y_test,  # labels
-                conf_matrix,
-                predictions,
-                best_model,
-                X_train,
-                y_train,
-                self.scores
-            )
-            
-            return best_model, conf_matrix
+            return {
+                'best_model': best_model,
+                'best_model_name': best_model_name,
+                'accuracy': accuracy,
+                'conf_matrix': conf_matrix,
+                'predictions': predictions,
+                'scores': scores
+            }
             
         except Exception as e:
             raise RuntimeError(f"Fel vid modellträning: {str(e)}")

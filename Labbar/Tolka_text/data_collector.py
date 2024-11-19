@@ -34,10 +34,10 @@ class DataCollector:
 
     def collect_new_data(self, image_path: str) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Samlar in träningsdata och hanterar befintligt dataset.
+        Samlar in och förbereder nya träningsbilder
         """
         MIN_DATASET_SIZE = 50
-        print("\n=== Samlar in ny träningsdata ===")
+        print("\n=== Samlar in ny träningsdata.  ===")
         
         # 1. Kontrollera om dataset finns
         existing_images, existing_labels = self.load_existing_dataset('dataset.npz')
@@ -49,20 +49,8 @@ class DataCollector:
             # Läs nya bilder och uppdatera dataset
             new_digits, predictions = self.image_processor.process_regions_with_ai(detected_regions, classifier)
             
-            # Lägg till nya unika bilder
-            current_size = len(existing_images)
-            self.save_data(new_digits, predictions, 'dataset.npz')
+            return new_digits, predictions
             
-            # Kontrollera storlek innan träning
-            total_size = len(existing_images) + len(new_digits)
-            if total_size < MIN_DATASET_SIZE:
-                print(f"\nDataset innehåller totalt {total_size} siffror")
-                print(f"Minst {MIN_DATASET_SIZE} siffror krävs för träning")
-                print("Lägg till fler unika bilder med siffror och försök igen")
-                sys.exit()
-                
-            return np.concatenate([existing_images, new_digits]), np.concatenate([existing_labels, predictions])
-        
         # Om dataset saknas
         else:
             # Skapa nytt dataset
@@ -108,7 +96,7 @@ class DataCollector:
             return np.array(backup_images), np.array(backup_labels)
         return np.array([]), np.array([])
 
-    def save_data(self, images: np.ndarray, labels: np.ndarray, filename: str) -> None:
+    def save_data(self, images: np.ndarray, labels: np.ndarray, filename: str) -> bool:
         """
         Sparar och versionshanterar ML-dataset med dublettkontroll.
         """
@@ -140,21 +128,21 @@ class DataCollector:
                         unique_images.append(img)
                         unique_labels.append(label)
                         new_hashes.append(img_hash)
+
+                if not unique_images:
+                    print("Inga nya unika siffror att lägga till - dem siffror fanns redan i dataset")
+                    return False
                 
                 # Kombinera med existerande data
-                if unique_images:
-                    combined_images = np.vstack((existing_data['images'], unique_images))
-                    combined_labels = np.concatenate((existing_data['labels'], unique_labels))
-                    print(f"Lagt till {len(unique_images)} nya unika siffror i dataset")
+                combined_images = np.vstack((existing_data['images'], unique_images))
+                combined_labels = np.concatenate((existing_data['labels'], unique_labels))
+                print(f"Lagt till {len(unique_images)} nya unika siffror i dataset")
                     
-                    # Uppdatera hash-filen
-                    existing_hashes.update(new_hashes)
-                    with open(hash_path, 'w') as f:
-                        f.write('\n'.join(existing_hashes))
-                else:
-                    combined_images = existing_data['images']
-                    combined_labels = existing_data['labels']
-                    print("Inga nya unika siffror att lägga till - dem siffror fanns redan i dataset")
+                # Uppdatera hash-filen
+                existing_hashes.update(new_hashes)
+                with open(hash_path, 'w') as f:
+                    f.write('\n'.join(existing_hashes))
+               
             else:
                 # Första gången - spara alla bilder och hashes
                 combined_images = processed_images
@@ -163,7 +151,7 @@ class DataCollector:
                     f.write('\n'.join(new_image_hashes.keys()))
             
             np.savez(save_path, images=combined_images, labels=combined_labels)
-            print(f"Dataset uppdaterat: {len(combined_images)} träningsexempel")
+            return True
             
         except Exception as e:
             print(f"Fel vid datasetsparande: {str(e)}")
@@ -200,3 +188,13 @@ class DataCollector:
         
         return np.array([]), np.array([])
   
+    def combine_datasets(self, new_images: np.ndarray, new_labels: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """Kombinerar nytt data med befintligt dataset"""
+        existing_images, existing_labels = self.load_existing_dataset('dataset.npz')
+        
+        if len(existing_images) > 0:
+            combined_images = np.vstack((existing_images, new_images))
+            combined_labels = np.concatenate((existing_labels, new_labels))
+            return combined_images, combined_labels
+        
+        return new_images, new_labels

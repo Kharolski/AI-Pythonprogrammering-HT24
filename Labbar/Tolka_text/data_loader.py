@@ -139,7 +139,6 @@ class DataLoader:
         
         try:
             images, labels = self.load_data('dataset.npz')
-            print(f"Laddat {len(images)} bilder från dataset")
             
             # Kontrollera minimum dataset storlek och erbjud backup
             if len(images) < MIN_DATASET_SIZE:
@@ -170,7 +169,7 @@ class DataLoader:
                     backup_images, backup_labels = collector.collect_from_backup(collector.image_folder)
                     images = np.concatenate([images, backup_images])
                     labels = np.concatenate([labels, backup_labels])
-                    print(f"Totalt dataset efter backup: {len(images)} bilder")
+                    
                     collector.save_data(images, labels, 'dataset.npz')
             
             return images, labels
@@ -180,7 +179,6 @@ class DataLoader:
             if ui.get_user_choice("Vill du ladda bilder från backup? (j/n): "):
                 backup_images, backup_labels = collector.collect_from_backup(collector.image_folder)
                 if len(backup_images) > 0:
-                    print(f"Laddat {len(backup_images)} bilder från backup")
                     collector.save_data(backup_images, backup_labels, 'dataset.npz')
                     return backup_images, backup_labels
                 else:

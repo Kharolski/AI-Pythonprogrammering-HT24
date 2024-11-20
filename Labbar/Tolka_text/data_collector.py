@@ -102,8 +102,15 @@ class DataCollector:
         """
         save_path = self.data_dir / f"{filename.removesuffix('.npz')}.npz"
         hash_path = self.data_dir / "image_hashes.txt"
-        processed_images = np.array([self.image_processor.prepare_image(img).flatten() 
-                                for img in images])
+
+        # Ensure images are in correct format before saving 
+        processed_images = []
+        for img in images:
+            if img.ndim == 1:
+                img = img.reshape(28, 28)
+            processed_images.append(img.flatten())  # Store as flattened array 
+            
+        processed_images = np.array(processed_images) 
         
         try:
             # Ladda existerande hashes

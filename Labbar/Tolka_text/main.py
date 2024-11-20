@@ -16,7 +16,7 @@ def setup_paths():
         'base': os.path.join(current_dir),
         'images': os.path.join(current_dir, "images"),
         'data': os.path.join(current_dir, "data"),
-        'new_image': os.path.join(current_dir, "images", "siffror", "test_image.png")   # ändra till din fil med bilder om du har en
+        'new_image': os.path.join(current_dir, "images", "siffror", "test_image2.png")   # ändra till din bild med siffror om du har en
     }
 
 def main():

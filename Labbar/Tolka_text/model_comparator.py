@@ -70,25 +70,32 @@ class ModelComparator:
         self.param_grids = param_grids or {
             # MLP hyperparametrar
             'MLP': {
-                'mlp__hidden_layer_sizes': [(100,50), (50,25), (100,50,25)],  # Olika nätverksarkitekturer
-                'mlp__learning_rate_init': [0.001, 0.01],  # Inlärningshastighet
-                'mlp__batch_size': [16],  # Batchstorlek för stokastisk optimering
-                'mlp__activation': ['relu', 'tanh']  # Aktiveringsfunktioner
+                'mlp__hidden_layer_sizes': [(200,100), (300,150)],    # Större nätverk för komplexa mönster
+                'mlp__learning_rate_init': [0.001, 0.005],                # Finjusterad inlärningshastighet
+                'mlp__batch_size': ['auto'],                                    # Låt sklearn välja optimal batch-storlek
+                'mlp__activation': ['relu'],                                     # ReLU fungerar bäst för bilddata
+                'mlp__early_stopping': [True]
             },
             
             # SVM hyperparametrar
             'SVM': {
-                'svm__C': [1.0, 10.0, 100.0],  # Regulariseringsstyrka
-                'svm__kernel': ['rbf', 'poly'],  # Kernelfunktioner
-                'svm__gamma': ['scale', 0.01, 0.001]  # Kernelkoefficient
+                'svm__C': [800.0, 1000.0, 1200.0],       # Maximal regulariseringsstyrka för bättre anpassning
+                'svm__kernel': ['rbf'],                  # RBF är bäst för sifferigenkänning
+                'svm__gamma': [0.0003, 0.0001, 0.00005], # Exakta gamma-värden för kärnfunktionen
+                'svm__shrinking': [True],                # Aktivera krympningsheuristik
+                'svm__class_weight': ['balanced'],       # Lägg till klassviktning
+                'svm__tol': [1e-5],                      # Hög precision vid konvergens
+                'svm__max_iter': [2000]                  # Utökade träningsiterationer
+                
             },
             
             # Random Forest hyperparametrar
             'RandomForest': {
-                'rf__n_estimators': [300, 500],  # Antal beslutsträd
-                'rf__max_depth': [30, 50],  # Maximalt träddjup
-                'rf__min_samples_split': [2, 3],  # Minsta antal samples för split
-                'rf__class_weight': ['balanced', 'balanced_subsample']  # Hantering av obalanserade klasser
+                'rf__n_estimators': [500, 700, 900],    # Fler träd för bättre generalisering
+                'rf__max_depth': [40, 60, 80],          # Djupare träd för mer detaljerad inlärning
+                'rf__min_samples_split': [2],           # Färre splits för att undvika overfitting
+                'rf__min_samples_leaf': [1],            # Kontroll för overfitting
+                'rf__class_weight': ['balanced']        # Balanserad viktning för jämn klassfördelning
             }
         }
 

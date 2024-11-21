@@ -57,12 +57,12 @@ class UserInteraction:
                 return False
             print("Vänligen svara med 'j' eller 'n'")
   
-    def review_predictions(self, images, labels, model_comparator, batch_size=5):
+    def review_predictions(self, images, labels, trained_model, batch_size=5):
         """
         Granska och korrigera prediktioner för nya bilder.
         """
         print("\n=== Granskning av prediktioner ===")
-        predictions = model_comparator.predict(images)
+        predictions = trained_model.predict(images)
         corrected_labels = []
         valid_images = []
         

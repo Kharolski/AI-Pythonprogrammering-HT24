@@ -36,7 +36,7 @@ class DataCollector:
         """
         Samlar in och förbereder nya träningsbilder
         """
-        MIN_DATASET_SIZE = 50
+        MIN_DATASET_SIZE = 80
         print("\n=== Samlar in ny träningsdata.  ===")
         
         # 1. Kontrollera om dataset finns

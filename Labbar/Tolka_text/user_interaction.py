@@ -68,7 +68,8 @@ class UserInteraction:
         
         plt.ion()
         
-        for i in range(0, len(images), batch_size):
+        i = 0
+        while i < len(images):
             batch_images = images[i:i + batch_size]
             batch_preds = predictions[i:i + batch_size]
             
@@ -82,37 +83,44 @@ class UserInteraction:
             plt.tight_layout()
             plt.show()
             
-            print("\nInstruktioner:")
-            print("J - Korrekt prediktion")
-            print("X - Ogiltig siffra (skippa)")
-            print("0-9 - Korrigera till denna siffra")
-            print("Q - Avbryt granskning")
-            print(f"\nAnge {len(batch_images)} värden (separerade med mellanslag):")
-            print(f"Nuvarande prediktioner: {' '.join(str(p) for p in batch_preds)}")
-            
-            response = input("Dina korrigeringar: ").lower().split()
-            
-            if 'q' in response:
-                plt.close('all')
-                print("\nKorrigeringen avbröts av användaren...")
-                print("Återgår till huvudmenyn...")
-                return None
+            while True:  # Loop tills giltig input eller avbryt
+                print("\nInstruktioner:")
+                print("J - Korrekt prediktion")
+                print("X - Ogiltig siffra (skippa)")
+                print("0-9 - Korrigera till denna siffra")
+                print("Q - Avbryt granskning")
+                print(f"\nAnge {len(batch_images)} värden (separerade med mellanslag):")
+                print(f"Nuvarande prediktioner: {' '.join(str(p) for p in batch_preds)}")
                 
-            if len(response) != len(batch_images):
-                print("Fel antal värden angivna. Försök igen.")
-                continue
+                response = input("Dina korrigeringar: ").lower().split()
                 
-            for img, resp in zip(batch_images, response):
-                if resp == 'j':
-                    valid_images.append(img)
-                    corrected_labels.append(pred)
-                elif resp == 'x':
+                if 'q' in response:
+                    plt.close('all')
+                    print("\nKorrigeringen avbröts av användaren...")
+                    print("Återgår till huvudmenyn...")
+                    return None
+                
+                if len(response) != len(batch_images):
+                    print(f"Fel antal värden angivna. Förväntade {len(batch_images)}, fick {len(response)}.")
                     continue
-                elif resp.isdigit() and 0 <= int(resp) <= 9:
-                    valid_images.append(img)
-                    corrected_labels.append(int(resp))
-                    
-        plt.close('all')
+                
+                # Giltig input - process batch och gå vidare
+                for img, resp in zip(batch_images, response):
+                    if resp == 'j':
+                        valid_images.append(img)
+                        corrected_labels.append(pred)
+                    elif resp == 'x':
+                        continue
+                    elif resp.isdigit() and 0 <= int(resp) <= 9:
+                        valid_images.append(img)
+                        corrected_labels.append(int(resp))
+                
+                plt.close(fig)  # Stäng bara nuvarande batch-figur
+                break  # Gå vidare till nästa batch
+            
+            i += batch_size  # Gå vidare till nästa batch bara när current batch är klar
+        
+        plt.close('all')  # Stäng alla kvarvarande figurer
         return {
             'images': np.array(valid_images),
             'corrected_labels': np.array(corrected_labels)

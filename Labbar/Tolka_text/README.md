@@ -43,16 +43,45 @@ Valet av algoritmer grundas på deras egenskaper och hur väl de lämpar sig fö
 - **Random Forest**: Robust mot överanpassning och effektiv i att hantera varians.
 
 ## Funktioner
-1. Samlar in och förbehandlar bilder av handskrivna siffror.
-2. Delar upp data i tränings- och testset för utvärdering.
-3. Tränar en klassificeringsmodell på träningsdata.
-4. Utvärderar modellens noggrannhet på testdata.
-5. Klassificerar nya handskrivna siffror och returnerar resultat.
+
+1. Samlar in och förbehandlar bilder av handskrivna siffror
+2. Intelligent segmentering av siffror med optimerad separation
+3. Batch-granskning med interaktiv verifiering (5 siffror åt gången)
+4. Tränar och jämför flera ML-modeller automatiskt
+5. Analyserar nya bilder med tränad modell
+6. Sparar verifierad data med dublettkontroll
+
+## Användargränssnitt
+
+### Menystruktur
+1. Samla in ny träningsdata
+2. Analysera ny bild
+3. Använd/återställ befintligt dataset
+4. Avsluta programmet
+
+### Verifieringsprocess
+- Visar 5 siffror åt gången för effektiv granskning
+- Stöd för snabbkommandon (J/X/0-9/Q)
+- Direkt feedback med bildvisning
+- Möjlighet att korrigera felaktiga prediktioner
+
+## ImageProcessor
+- Förbättrad regionseparering med optimerade tröskelvärden
+- Intelligent sammanslagning av närliggande regioner
+- Robust detektering av enskilda siffror
+- Automatisk kontrastförbättring och brusreducering
+
+## Visualizer
+- Batch-visualisering med subplot-layout
+- Interaktiv granskning med matplotlib
+- Tydlig presentation av prediktioner
+- Effektiv hantering av figurvisning
 
 ## Begränsningar
-- Begränsat till siffror 0-9, vilket kan påverka modellens allmänna tillämpbarhet.
-- Använder endast svartvita bilder, vilket kan påverka igenkänning under varierande ljusförhållanden.
-- Fixerad bildstorlek (28x28 pixlar) kan begränsa detaljer.
+- Kräver tydlig separation mellan siffror för optimal detektering
+- Batch-granskning begränsad till 5 siffror åt gången
+- Dataset måste finnas för att använda vissa funktioner
+- Fixerad bildstorlek (28x28 pixlar) måste följa specifikationer
 
 ## Krav
 Följande krav specificerar de nödvändiga elementen för att genomföra projektet.
@@ -86,22 +115,38 @@ Följande krav specificerar de nödvändiga elementen för att genomföra projek
 - `predict()`: Klassificerar nya handskrivna siffror.
 
 **ImageProcessor**
-- `enhance_image()`: Förbättrar bildkvaliteten.
-- `process_with_prediction()`: Visar och validerar extraherade siffror.
-- `batch_process()`: Hanterar flera bilder samtidigt.
-- `_segment_image()`: Segmenterar bilder till individuella siffror.
-- `_is_valid_digit()`: Validerar sifferkvalitet.
+- `analyze_new_image()`: Analyserar nya bilder med tränad modell
+- `detect_digit_regions()`: Detekterar och separerar sifferregioner
+- `enhance_image()`: Förbättrar bildkvalitet med kontrastjustering
+- `prepare_image()`: Förbereder bilder för ML-modellen
+- `process_regions_with_ai()`: Klassificerar detekterade sifferregioner med ML-modellen
 
 **ModelComparator**
-- `optimize_hyperparameters()`: Optimerar hyperparametrar för varje modell.
-- `compare_models()`: Jämför och visualiserar modellernas prestanda.
+- `train_and_evaluate()`: Tränar och utvärderar flera modeller
+- `optimize_hyperparameters()`: Optimerar modellparametrar
+- `compare_models()`: Jämför olika modellers prestanda
 
 **Visualizer**
-- `plot_sample_images()`: Visar exempel på bilder från datasetet.
-- `plot_confusion_matrix()`: Visar förväxlingsmatris för modellens prestanda.
+- `review_predictions()`: Hanterar batch-granskning av prediktioner
+- `plot_complete_analysis()`: Visar omfattande analysresultat
+- `setup_style()`: Konfigurerar visualiseringsstil
 
 **Main**
 - Huvudfunktionen som sköter hela processen från datainsamling till utvärdering.
+
+## Tekniska Detaljer
+
+### Bildbehandling
+- Optimerad regionseparering (0.8 horisontell, 1.0 vertikal tolerans)
+- Adaptiv tröskling för robust segmentering
+- Kontrastförbättring med CLAHE
+- Brusreducering med bevarad detaljskärpa
+
+### ML Pipeline
+- Automatisk modelloptimering med GridSearchCV
+- Jämförelse av flera modelltyper (MLP, SVM, Random Forest)
+- Interaktiv verifiering av prediktioner
+- Inkrementell datasetuppbyggnad
 
 ## Framtida förbättringar
 - **Implementera mer avancerade modeller**: Utforska och implementera Convolutional Neural Networks (CNNs) för att fånga mer komplexa mönster i handskrivna siffror.

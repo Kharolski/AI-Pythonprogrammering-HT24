@@ -47,7 +47,7 @@ class Visualizer:
             fig = plt.figure(figsize=(15, 3))
             for j, (img, pred) in enumerate(zip(batch_images, batch_preds)):
                 plt.subplot(1, batch_size, j + 1)
-                plt.imshow(img.reshape(28, 28), cmap='gray')
+                plt.imshow(img.reshape(28, 28), cmap='gray', vmin=0, vmax=1, interpolation='nearest')
                 plt.title(f"Bild {i+j+1}: Pred {pred}")
                 plt.axis('off')
             plt.tight_layout()
@@ -117,10 +117,14 @@ class Visualizer:
         # Övre rad: Exempel på prediktioner
         for i in range(num_samples):
             ax = fig.add_subplot(gs[0, i])
-            ax.imshow(images[i].reshape(28, 28), cmap='gray')
+            display_image = images[i].reshape(28, 28)
+            
+            # Sänker tröskelvärdet till 0.2 för att behålla mer av siffrans struktur
+            display_image = np.where(display_image > 0.2, 1.0, 0.0)
+            ax.imshow(display_image, cmap='gray', vmin=0, vmax=1)
             ax.set_title(f'Sann: {int(labels[i])}\nPred: {int(predictions[i])}')
             ax.axis('off')
-        
+
         # Nedre vänster: Modell-jämförelse
         ax = fig.add_subplot(gs[1, 0:2])    # Spans first two columns
         sns.barplot(x=list(scores.keys()), y=list(scores.values()), ax=ax)

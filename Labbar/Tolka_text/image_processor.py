@@ -59,7 +59,11 @@ class ImageProcessor:
         image = cv2.equalizeHist(image)
 
         # Mer känslig tröskling för att behålla detaljer
-        _, image = cv2.threshold(image, 100, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        _, image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+        # Rensa brus efter tröskling
+        kernel = np.ones((2,2), np.uint8)
+        image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
 
         image = cv2.resize(image, self.image_size)
         return image.astype('float32') / 255.0

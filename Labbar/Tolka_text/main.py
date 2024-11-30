@@ -17,7 +17,7 @@ def setup_paths():
         'base': os.path.join(current_dir),
         'images': os.path.join(current_dir, "images"),
         'data': os.path.join(current_dir, "data"),
-        'new_image': os.path.join(current_dir, "images", "siffror", "image3.jpg")   # <-- ändra till bild med siffror som ska analyseras
+        'new_image': os.path.join(current_dir, "images", "siffror", "image1.jpg")   # <-- ändra till bild med siffror som ska analyseras
     }
 
 def main():

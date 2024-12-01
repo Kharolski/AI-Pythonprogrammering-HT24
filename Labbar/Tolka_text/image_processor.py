@@ -97,15 +97,16 @@ class ImageProcessor:
 
         thresh = cv2.adaptiveThreshold(
             enhanced, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-            cv2.THRESH_BINARY_INV, 21, 4
+            cv2.THRESH_BINARY_INV, 21, 4  # Ökade trösklingsvärden (21, 4) för att minska brus
         )
 
+        # Justera konturdetekteringen för att fånga alla siffror
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         regions = []
 
         # Samla alla giltiga regioner först
         for contour in contours:
-            if cv2.contourArea(contour) > 100:  # Ökat tröskelvärde att filtrerar bort brus
+            if cv2.contourArea(contour) > 45:  # Lite lägre tröskel för att fånga fler siffror
                 x, y, w, h = cv2.boundingRect(contour)
                 if self._is_valid_digit_region(w, h):
                     regions.append((x, y, w, h))
@@ -180,9 +181,20 @@ class ImageProcessor:
 
     # Hjälpfunktioner för intern användning
     def _is_valid_digit_region(self, width: int, height: int) -> bool:
-        """Validerar sifferproportioner baserat på ML-träningsdata"""
+        """
+        Validerar sifferproportioner för detektering.
+        
+        aspect_ratio = width / height:
+        - 0.1: Tillåter mycket smala siffror (höjd upp till 10x bredden)
+        - 3.0: Tillåter breda siffror (bredd upp till 3x höjden)
+        
+        min(width, height) >= 4:
+        - Säkerställer att siffran är minst 4 pixlar i både bredd och höjd
+        - Filtrerar bort för små områden som troligen är brus
+        """
         aspect_ratio = width / height
-        return 0.2 <= aspect_ratio <= 2.0 and min(width, height) >= 8
+        # Finjusterade värden för att fånga alla siffror
+        return 0.1 <= aspect_ratio <= 3.0 and min(width, height) >= 4
 
     def _check_connectivity(self, x1, y1, w1, h1, x2, y2, w2, h2, thresh_image):
         """Kontrollerar om två regioner är sammankopplade genom att analysera pixlar mellan dem"""

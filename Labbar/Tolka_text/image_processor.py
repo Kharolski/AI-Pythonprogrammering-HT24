@@ -86,35 +86,40 @@ class ImageProcessor:
 
     def detect_digit_regions(self, image_path: str, classifier=None) -> Tuple[List[Tuple[int, int, int, int]], List[int]]:
         """
-        Hittar och isolerar siffror i en bild. Om classifier anges görs även prediktioner.
+        Huvudfunktion för att hitta och analysera siffror i en bild.
+        Returnerar regioner med siffror och eventuella AI-prediktioner om classifier anges.
         """
+        # Läs in originalbilden
         self.image = cv2.imread(image_path)
         if self.image is None:
             raise FileNotFoundError(f"Kunde inte läsa bilden: {image_path}")
 
+        # Konvertera till gråskala och förbättra bildkvaliteten
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         enhanced = self.enhance_image(gray)
 
+        # Använd adaptiv tröskling för att separera siffror från bakgrund
+        # Parametrarna 21, 4 är optimerade för att minska brus men behålla sifferdetaljer
         thresh = cv2.adaptiveThreshold(
             enhanced, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
             cv2.THRESH_BINARY_INV, 21, 4  # Ökade trösklingsvärden (21, 4) för att minska brus
         )
 
-        # Justera konturdetekteringen för att fånga alla siffror
+        # Hitta alla möjliga sifferregioner i bilden
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         regions = []
 
-        # Samla alla giltiga regioner först
+        # Filtrera fram giltiga sifferregioner baserat på storlek och form
         for contour in contours:
             if cv2.contourArea(contour) > 45:  # Lite lägre tröskel för att fånga fler siffror
                 x, y, w, h = cv2.boundingRect(contour)
                 if self._is_valid_digit_region(w, h):
                     regions.append((x, y, w, h))
 
-        # Slå ihop närliggande regioner
+        # Hantera uppdelade siffror genom att slå ihop närliggande regioner
         merged_regions = []
-        used = set()
-
+        used = set()        # Håll koll på redan behandlade regioner
+        
         for i, (x1, y1, w1, h1) in enumerate(regions):
             if i in used:
                 continue
@@ -122,18 +127,21 @@ class ImageProcessor:
             current_region = [x1, y1, w1, h1]
             used.add(i)
 
-            # Kolla närliggande regioner
+            # Leta efter regioner som bör slås ihop med nuvarande region
             for j, (x2, y2, w2, h2) in enumerate(regions):
                 if j in used:
                     continue
 
                 # Om regionerna överlappar eller är mycket nära varandra ---------------------------------------
+                # Kontrollera om regionerna bör kombineras baserat på:
+                # - Horisontellt avstånd (85% av största bredden)
+                # - Vertikalt avstånd (110% av största höjden)
+                # - Pixelkoppling mellan regionerna
                 if (abs(x1 - x2) < max(w1, w2) * 0.85 and  # Använd största bredden som referens
                     abs(y1 - y2) < max(h1, h2) * 1.1 and    # Öka vertikalt avstånd för split digits
                     self._check_connectivity(x1, y1, w1, h1, x2, y2, w2, h2, thresh)):
 
-
-                    # Uppdatera nuvarande region till att omfatta båda
+                    # Beräkna ny region som omfattar båda delarna
                     x = min(current_region[0], x2)
                     y = min(current_region[1], y2)
                     w = max(current_region[0] + current_region[2], x2 + w2) - x
@@ -144,6 +152,7 @@ class ImageProcessor:
 
             merged_regions.append(tuple(current_region))
 
+        # Returnera antingen bara regioner eller även AI-prediktioner
         if classifier is None:
             return merged_regions
         else:
@@ -182,7 +191,7 @@ class ImageProcessor:
     # Hjälpfunktioner för intern användning
     def _is_valid_digit_region(self, width: int, height: int) -> bool:
         """
-        Validerar sifferproportioner för detektering.
+        Validerar sifferproportioner för att avgöra om en region innehåller en giltig siffra.
         
         aspect_ratio = width / height:
         - 0.1: Tillåter mycket smala siffror (höjd upp till 10x bredden)
@@ -192,28 +201,36 @@ class ImageProcessor:
         - Säkerställer att siffran är minst 4 pixlar i både bredd och höjd
         - Filtrerar bort för små områden som troligen är brus
         """
+        # Beräkna förhållandet mellan bredd och höjd
         aspect_ratio = width / height
+
         # Finjusterade värden för att fånga alla siffror
+        # - 0.1 tillåter mycket smala siffror (som "1")
+        # - 3.0 tillåter breda siffror (som "2" eller "5")
+        # - Minst 4 pixlar i både höjd och bredd för att undvika brus
         return 0.1 <= aspect_ratio <= 3.0 and min(width, height) >= 4
 
     def _check_connectivity(self, x1, y1, w1, h1, x2, y2, w2, h2, thresh_image):
-        """Kontrollerar om två regioner är sammankopplade genom att analysera pixlar mellan dem"""
-        # Beräkna området mellan regionerna -------------------------------------------------------------
+        """
+            Analyserar om två regioner tillhör samma siffra genom att undersöka området mellan dem.
+            Särskilt viktig för siffror som kan delas upp i separata delar, som "4".
+        """
+        # Extrahera området mellan de två regionerna för analys
         connection_area = thresh_image[int(min(y1, y2)):int(max(y1+h1, y2+h2)),
                                 int(min(x1, x2)):int(max(x1+w1, x2+w2))]
     
-        # Beräkna viktiga mätvärden för regionanalys
-        vertical_overlap = min(y1 + h1, y2 + h2) - max(y1, y2)  # Vertikal överlappning
-        density = np.mean(connection_area)  # Pixeldensitet i området
-        x_center1 = x1 + w1/2       # Centrumpunkt för första regionen
-        x_center2 = x2 + w2/2       # Centrumpunkt för andra regionen
+        # Beräkna viktiga mätvärden för att avgöra om regionerna hör ihop
+        vertical_overlap = min(y1 + h1, y2 + h2) - max(y1, y2)  # Hur mycket regionerna överlappar vertikalt
+        density = np.mean(connection_area)  # Hur många pixlar som finns mellan regionerna
+        x_center1 = x1 + w1/2       # Mittpunkt för första regionen
+        x_center2 = x2 + w2/2       # Mittpunkt för andra regionen
     
-        # Speciallogik för vertikalt kopplade komponenter (t.ex. siffran 4)
+        # Kontrollera om regionerna tillhör samma siffra baserat på tre kriterier:
         if (vertical_overlap > min(h1, h2) * 0.1 and            # Minimal vertikal överlappning krävs
-            abs(x_center1 - x_center2) < min(w1, w2) * 0.9 and  # Centrumpunkterna är nära horisontellt
-            density > 20):          # Tillräcklig pixeldensitet mellan regionerna
+            abs(x_center1 - x_center2) < min(w1, w2) * 0.9 and  # Centrumpunkterna ligger nära varandra
+            density > 20):          # Tillräckligt många pixlar mellan regionerna
             return True             # Regionerna tillhör samma siffra
     
-        # Separera alla andra fall (horisontellt angränsande siffror
+        # Separera alla andra fall (horisontellt angränsande siffror)
         return False    # Regionerna tillhör olika siffror
     

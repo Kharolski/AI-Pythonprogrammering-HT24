@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -118,10 +119,23 @@ class Visualizer:
         for i in range(num_samples):
             ax = fig.add_subplot(gs[0, i])
             display_image = images[i].reshape(28, 28)
+
+            # Behåll originalvärdena men förstärk kontrasten
+            display_image = display_image.copy()
+            display_image[display_image > 0] *= 1.5 # Ökad kontrast för tydligare detaljer
+            display_image = np.clip(display_image, 0, 1)
             
-            # Sänker tröskelvärdet till 0.2 för att behålla mer av siffrans struktur
-            display_image = np.where(display_image > 0.2, 1.0, 0.0)
-            ax.imshow(display_image, cmap='gray', vmin=0, vmax=1)
+            # Invertera för svarta siffror på vit bakgrund
+            display_image = 1 - display_image
+            
+            # Använd en skarpare rendering
+            ax.imshow(display_image, 
+                      cmap='Greys', 
+                      interpolation='nearest',
+                      vmin=-0.2,      # Justera svärtan
+                      vmax=1.0)       # Justera vitheten 
+            
+            # Lägg till tydligare titel
             ax.set_title(f'Sann: {int(labels[i])}\nPred: {int(predictions[i])}')
             ax.axis('off')
 
